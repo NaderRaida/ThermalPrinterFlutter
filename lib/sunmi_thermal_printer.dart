@@ -29,7 +29,7 @@ class SunmiThermalPrinter {
     return version;
   }
 
-  List<Map<String, dynamic>> _payload;
+  List<Map<String, dynamic>> _payload = [];
 
   PrintAlign _defaultAlign = PrintAlign.Left;
 
@@ -38,11 +38,11 @@ class SunmiThermalPrinter {
 
   /// Runs stored printing instructions and resets the printer state afterwards.
   Future<void> exec() async {
-    String res;
+    String? res;
     try {
       res = await _channel.invokeMethod<String>(
           'print', <String, dynamic>{'payload': _payload});
-      print(res);
+      print(res!);
     } on PlatformException catch (e) {
       rethrow;
     } finally {
@@ -52,7 +52,7 @@ class SunmiThermalPrinter {
 
   void clear() => _payload = [];
 
-  void _cmd(String method, [List<dynamic> params]) {
+  void _cmd(String method, [List<dynamic>? params]) {
     if (_payload == null) _payload = [];
     List<MapEntry<String, dynamic>> entries = [];
     entries.add(MapEntry<String, dynamic>('method', method));
@@ -76,7 +76,9 @@ class SunmiThermalPrinter {
 
   /// Changes default alignment to either [Center, Left, Right].
   void align(PrintAlign align) {
-    _defaultAlign = align;
+    if(align != null){
+      _defaultAlign = align;
+    }
     _alignDefault();
   }
 
@@ -106,7 +108,7 @@ class SunmiThermalPrinter {
   void _bitmap(Uint8List bytes) => _cmd('bitmap', [bytes]);
 
   /// Sets Bold state. When [state] is null, toggles on/off).
-  void bold([bool state]) => _cmd('bold', [state]);
+  void bold([bool? state]) => _cmd('bold', [state]);
 
   /// NB: Does not seem to have any effect with some devices.
   void darkness(int level) => _cmd('darkness', [level]);
@@ -126,23 +128,23 @@ class SunmiThermalPrinter {
 
   /// Proceeds [lines] number of lines down.
   /// Moves 1 line when [lines] is null.
-  void newLine([int lines]) => _cmd('newLine', [lines]);
+  void newLine([int? lines]) => _cmd('newLine', [lines]);
 
   /// Prints [str].
   /// NB: All printing on the same line will align according to the last alignment setting.
-  void print([String str]) => _cmd('print', [str]);
+  void print([String? str]) => _cmd('print', [str]);
 
   /// Prints [str] as with [print], then moves to the next line.
-  void println([String str]) => _cmd('println', [str]);
+  void println([String? str]) => _cmd('println', [str]);
 
   /// Prints [str] like in [println], but with alignment [align] without changing the affecting the default alignment.
-  void printAlign([String str, PrintAlign align]) {
+  void printAlign([String? str, PrintAlign? align]) {
     if (align == _defaultAlign) {
       println(str);
     } else {
       var previousAlign = _defaultAlign;
       this
-        ..align(align)
+        ..align(align!)
         ..println(str)
         ..align(previousAlign);
       _defaultAlign = previousAlign;
@@ -161,13 +163,13 @@ class SunmiThermalPrinter {
       printAlign(_pad(str, pad), PrintAlign.Center);
 
   /// Convenience method for [printAlign] with center alignment.
-  void printCenter([String str]) => printAlign(str, PrintAlign.Center);
+  void printCenter([String? str]) => printAlign(str, PrintAlign.Center);
 
   /// Convenience method for [printAlign] with left alignment.
-  void printLeft([String str]) => printAlign(str, PrintAlign.Left);
+  void printLeft([String? str]) => printAlign(str, PrintAlign.Left);
 
   /// Convenience method for [printAlign] with right alignment.
-  void printRight([String str]) => printAlign(str, PrintAlign.Right);
+  void printRight([String? str]) => printAlign(str, PrintAlign.Right);
 
   /// Prints a divider using [pattern]
   void divider([String pad = '\u2500']) =>
@@ -402,12 +404,12 @@ class SunmiThermalPrinter {
 }
 
 class QRVersion {
-  final int version;
-  final Map<QRErrorCode, int> byteLimit;
+  final int? version;
+  final Map<QRErrorCode, int>? byteLimit;
   const QRVersion({this.version, this.byteLimit});
 
-  int get modulesPerSide => version * 4 + 17;
-  int get totalModules => math.pow(modulesPerSide, 2);
+  int get modulesPerSide => version! * 4 + 17;
+  num get totalModules => math.pow(modulesPerSide, 2);
 }
 
 enum PrintAlign { Center, Left, Right }
@@ -418,7 +420,7 @@ extension PrintAlignExt on PrintAlign {
     PrintAlign.Left: 'LEFT',
     PrintAlign.Right: 'RIGHT',
   };
-  String get value => values[this];
+  String? get value => values[this];
 }
 
 enum Underline { Thin, Thick, None }
@@ -429,7 +431,7 @@ extension UnderlineExt on Underline {
     Underline.Thick: 'THICK',
     Underline.None: 'NONE',
   };
-  String get value => values[this];
+  String? get value => values[this];
 }
 
 /// Error correcting levels.
@@ -446,7 +448,7 @@ extension QRErrorCodeExt on QRErrorCode {
     QRErrorCode.Q: 2,
     QRErrorCode.H: 3,
   };
-  int get value => values[this];
+  int? get value => values[this];
 }
 
 enum BarcodeText { None, Top, Bottom, Both }
@@ -458,7 +460,7 @@ extension BarcodeTextExt on BarcodeText {
     BarcodeText.Bottom: 2,
     BarcodeText.Both: 3,
   };
-  int get value => values[this];
+  int? get value => values[this];
 }
 
 enum BarcodeSymbology {
@@ -491,5 +493,5 @@ extension BarcodeSymbologyExt on BarcodeSymbology {
     BarcodeSymbology.UNKNOWN_2:
         10, // TODO: find out which symbology this represents
   };
-  int get value => values[this];
+  int? get value => values[this];
 }
