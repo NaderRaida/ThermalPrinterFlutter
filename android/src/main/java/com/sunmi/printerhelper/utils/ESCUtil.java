@@ -20,6 +20,9 @@ public class ESCUtil {
 	public static final byte CR = 0x0D;// Home key
 	public static final byte FF = 0x0C;// Carriage control (print and return to the standard mode (in page mode))
 	public static final byte CAN = 0x18;// Canceled (cancel print data in page mode)
+	public static final byte CUT_1 = 0x56;
+	public static final byte CUT_2 = 0x41;
+	public static final byte CUT_3 = 0x00;
 
 	// 初始化打印机
 	public static byte[] init_printer() {
@@ -434,5 +437,18 @@ public class ESCUtil {
 			e.printStackTrace();
 		}
 		return buffer.toByteArray();
+	}
+
+	// ------------------------Align-----------------------------
+
+
+
+	public static byte[] cutThePaper() {
+		byte[] result = new byte[4];
+		result[0] = GS;
+		result[1] = CUT_1;
+		result[2] = CUT_2;
+		result[3] = CUT_3;
+		return result;
 	}
 }

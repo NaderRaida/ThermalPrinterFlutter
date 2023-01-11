@@ -126,6 +126,10 @@ class SunmiThermalPrinter {
     _cmd('fontSize', [width, height]);
   }
 
+  void cutPaper(){
+    _cmd('cut', []);
+  }
+
   /// Proceeds [lines] number of lines down.
   /// Moves 1 line when [lines] is null.
   void newLine([int? lines]) => _cmd('newLine', [lines]);

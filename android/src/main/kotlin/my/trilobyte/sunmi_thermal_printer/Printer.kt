@@ -52,6 +52,10 @@ class Printer {
         newLine()
     }
 
+    fun cutPaper(){
+        call(ESCUtil.cutThePaper())
+    }
+
     fun bitmap(bytes: ByteArray) =
             call(ESCUtil.printBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size)))
 
@@ -116,6 +120,7 @@ class Printer {
             "qr" -> qr(params!![0] as String, params!![1] as Int, params!![2] as Int)
             "qr2" -> qr2(params!![0] as String, params!![1] as String, params!![2] as Int, params!![3] as Int)
             "underline" -> underline(params!![0] as String)
+            "cut" -> cutPaper()
             else -> throw Exception("Method not found")
         }
     }
